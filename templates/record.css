@@ -1,0 +1,192 @@
+/* The filed record's stylesheet, adapted from DOCUMENT-CRAFT.md section 10.
+ *
+ * This is deliberately NOT the app's design language. The screen pack is
+ * parchment and sealing wax, because that is Doorstep Receipt's own voice. The
+ * document that leaves the app and gets attached to a retailer's claim form is
+ * white paper and black ink, because it is going to be printed, photocopied and
+ * read by somebody whose job is to reject things. Every decorative choice on
+ * such a document is a small claim that it was made by a marketing department.
+ *
+ * Fonts: DOCUMENT-CRAFT says ship the files rather than fetch them, so that the
+ * adjuster's render and ours are the same document. This repository ships no
+ * font files, so the stack falls back, and that is the failure mode the
+ * reference warns about. It is stated here and in README.md rather than hidden.
+ */
+
+:root {
+  --face-text:  "Charter", "Bitstream Charter", "Charis SIL", "Source Serif 4",
+                Georgia, "Liberation Serif", "Times New Roman", serif;
+  --face-label: "Public Sans", "Source Sans 3", "Liberation Sans", "Helvetica Neue", Arial, sans-serif;
+  --face-data:  "IBM Plex Mono", "DejaVu Sans Mono", "Liberation Mono", "Courier New", monospace;
+
+  --ink:        #000000;   /* true black; not #111 */
+  --paper:      #FFFFFF;   /* true white; cream prints grey and reads as a tell */
+  --tint:       #EDEDED;   /* about 13% after print gain */
+  --rule-hair:  0.75pt;    /* thinner than this vanishes in a photocopy */
+  --rule-sect:  1pt;
+  --rule-heavy: 2pt;
+
+  --gutter:     40mm;
+  --measure:    118mm;
+  --content:    158mm;     /* gutter + measure: fits A4 and US Letter */
+}
+
+@page {
+  size: A4;
+  margin: 26mm 26mm 20mm 26mm;
+  @bottom-left   { content: string(form-id);  font: 400 8.5pt/11pt var(--face-label); }
+  @bottom-center { content: "Sheet " counter(page) " of " counter(pages);
+                   font: 400 8.5pt/11pt var(--face-label); }
+  @bottom-right  { content: string(record-no); font: 400 8.5pt/11pt var(--face-label); }
+}
+
+html { font-size: 11pt; }
+body {
+  width: var(--content);
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 11pt/15.5pt var(--face-text);
+  font-variant-numeric: lining-nums proportional-nums;
+  text-align: left;   /* never justified: justification opens rivers at this measure */
+  hyphens: none;
+  orphans: 3;
+  widows: 3;
+}
+
+h1, h2, h3 { font-weight: 400; }
+
+/* Masthead: issuer as text on the left, the identity block a reader photographs
+   on the right, mirroring CPR PD 32 paragraph 17.2. */
+.masthead {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 12mm;
+  border-bottom: var(--rule-heavy) solid var(--ink);
+  padding-bottom: 3mm;
+  margin-bottom: 5mm;
+}
+.masthead h1 { font: 400 16pt/19pt var(--face-text); margin: 0 0 1mm; }
+.masthead .scope  { font: 400 10pt/13pt var(--face-text); margin: 0 0 2mm; }
+.masthead .issuer { font: 400 9pt/12pt var(--face-text); margin: 0; }
+.masthead .identity { text-align: right; font: 400 8.5pt/12pt var(--face-label); }
+.masthead .identity dt { display: inline-block; min-width: 26mm; text-align: left; }
+.masthead .identity dd { display: inline; margin: 0; font-weight: 700; }
+.masthead .identity div { white-space: nowrap; }
+
+/* Both must stay rendered: display:none kills string-set and the running footer
+   silently comes out empty. */
+.record-no { string-set: record-no content(); }
+.form-id   { string-set: form-id content(); }
+
+/* The FRE 901(b)(9) block: it describes the process that produced the record. */
+.provenance {
+  border: var(--rule-sect) solid var(--ink);
+  padding: 3mm 4mm;
+  margin-bottom: 6mm;
+  break-inside: avoid;
+}
+.provenance h2 { font: 700 8.5pt/11pt var(--face-label); letter-spacing: 0.04em; margin: 0 0 2mm; }
+.provenance dl { display: grid; grid-template-columns: 38mm 1fr; gap: 1.5mm 4mm; margin: 0; }
+.provenance dt { font: 400 8.5pt/12pt var(--face-label); margin: 0; }
+.provenance dd { font: 400 9.5pt/13pt var(--face-text); margin: 0; }
+
+h2.section {
+  font: 700 11pt/14pt var(--face-label);
+  border-bottom: var(--rule-sect) solid var(--ink);
+  padding-bottom: 1.5mm;
+  margin: 7mm 0 4mm;
+}
+
+/* The gutter carries the paragraph number, the basis marker and the exhibit
+   reference. A reader scanning it alone sees the shape of the record. */
+.block {
+  display: grid;
+  grid-template-columns: var(--gutter) var(--measure);
+  margin-bottom: 4mm;
+  break-inside: avoid;
+}
+.block > .mark { font: 400 8.5pt/15.5pt var(--face-label); padding-right: 6mm; }
+.block > .mark .no    { display: block; font-weight: 700; }
+.block > .mark .basis { display: block; }
+.block > .mark .exh   { display: block; font-family: var(--face-data); font-size: 8pt; }
+.block > .body > :first-child { margin-top: 0; }
+.block > .body > :last-child  { margin-bottom: 0; }
+.block .source { font: 400 8.5pt/12pt var(--face-label); margin: 1mm 0 0; }
+
+/* Basis is carried by the printed word. Weight only reinforces it. */
+[data-basis="RECORDED"] .basis { font-weight: 700; }
+
+table.log, table.manifest { width: var(--content); border-collapse: collapse; margin-bottom: 4mm; }
+table.log thead, table.manifest thead { display: table-header-group; }
+table.log th, table.manifest th {
+  font: 700 8.5pt/11pt var(--face-label);
+  text-align: left;
+  border-bottom: var(--rule-sect) solid var(--ink);
+  padding: 2mm 2.5mm 1.5mm 0;
+}
+table.log td, table.manifest td {
+  border-bottom: var(--rule-hair) solid var(--ink);
+  padding: 2mm 2.5mm 2mm 0;
+  vertical-align: top;
+  font: 400 10pt/13pt var(--face-text);
+}
+table.log tr, table.manifest tr { break-inside: avoid; }
+table.log .basis-cell { font: 400 8.5pt/13pt var(--face-label); }
+.manifest .id { font: 700 10pt/13pt var(--face-label); }
+.empty-row td { font: 400 10pt/13pt var(--face-label); }
+
+.hash {
+  font: 400 9pt/13pt var(--face-data);
+  font-variant-numeric: slashed-zero tabular-nums;
+  white-space: pre;
+}
+.verify { border: var(--rule-sect) solid var(--ink); padding: 3mm 4mm; margin-top: 5mm; break-inside: avoid; }
+.verify pre { font: 400 9pt/13pt var(--face-data); margin: 2mm 0; white-space: pre-wrap; }
+.verify h2 { font: 700 8.5pt/11pt var(--face-label); margin: 0 0 2mm; }
+
+time, .tnum { font-variant-numeric: tabular-nums lining-nums slashed-zero; }
+.verbatim { font-style: italic; }   /* third-party strings, reproduced as given */
+code { font-family: var(--face-data); font-size: 9.5pt; }
+
+.statement {
+  border: var(--rule-sect) solid var(--ink);
+  padding: 3mm 4mm;
+  margin-top: 6mm;
+  break-inside: avoid;
+}
+.statement h2 { font: 700 8.5pt/11pt var(--face-label); margin: 0 0 2mm; }
+.statement p { margin: 0 0 2mm; }
+.statement .sig { font: 400 9pt/16pt var(--face-label); margin-top: 4mm; }
+
+.sheet-break { break-before: page; }
+
+@media screen {
+  html { background: #7A7A7A; }
+  body { margin: 20px auto; padding: 26mm 26mm 20mm; box-shadow: 0 1px 6px rgba(0, 0, 0, .25); }
+}
+
+/* On a phone, a 158mm page box is 210mm wide with its margins, which is about
+   two and a half times the viewport. Reflowing it is not an option: this is a
+   document with a fixed measure, and a record that lays out differently on the
+   adjuster's phone than on their desk is two documents with one record number,
+   which is the thing the rest of this stylesheet exists to prevent.
+   So the sheet keeps its geometry and the screen scales it down to fit — the
+   same thing a PDF viewer does, and for the same reason. Screen only; print
+   and the pack's own copy are untouched. */
+@media screen and (max-width: 820px) {
+  html { background: #7A7A7A; overflow-x: hidden; }
+  body {
+    /* 210mm is the sheet's full width including its margins. */
+    transform: scale(calc(100vw / 210mm));
+    transform-origin: top left;
+    margin: 0;
+    /* Reclaim the space the scale left behind, so the page does not end in a
+       long grey tail. */
+    margin-bottom: calc(-100% + 100vw);
+  }
+}
+@media print {
+  html { background: none; }
+  body { box-shadow: none; padding: 0; }
+}

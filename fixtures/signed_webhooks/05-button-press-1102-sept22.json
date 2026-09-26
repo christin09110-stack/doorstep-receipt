@@ -1,0 +1,26 @@
+{
+  "payload": {
+    "meta": {
+      "version": "1.0",
+      "time": "2026-09-22T11:02:44Z",
+      "request_id": "req-fixture-005"
+    },
+    "data": {
+      "id": "evt-fixture-005",
+      "type": "ding",
+      "attributes": {
+        "source": "front-door",
+        "source_type": "doorbell",
+        "timestamp": "2026-09-22T11:02:44Z"
+      },
+      "relationships": {
+        "devices": {
+          "data": {
+            "id": "ava1.ring.device.FRONTDOOR"
+          }
+        }
+      }
+    }
+  },
+  "signature": "75da5059e5fab5f38dca0314fe5e4bb8d5a688e2de5d67348b7dce629cd3c5b6"
+}

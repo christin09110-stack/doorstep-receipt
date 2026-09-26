@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- Without this a phone assumes a 980px desktop and zooms the whole sheet to
+     an unreadable fraction of its size. With it, the stylesheet's screen rule
+     scales the sheet to the real viewport instead. -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doorstep delivery record {{record_no}}</title>
+{{stylesheet_html}}
+</head>
+<body>
+
+<header class="masthead">
+  <div>
+    <h1>Doorstep delivery record</h1>
+    <p class="scope">A record of what one doorbell camera recorded at one door during one
+      stated window of time, set beside what a carrier's tracking page claimed. It is not a
+      record of what any person did.</p>
+    <p class="issuer">Issued by the account holder at the delivery address, using Doorstep
+      Receipt {{version}}. No carrier and no camera manufacturer has seen or endorsed it.</p>
+  </div>
+  <dl class="identity">
+    <div><dt>Record no.</dt><dd class="record-no">{{record_no}}</dd></div>
+    <div><dt>Form</dt><dd class="form-id">{{form_id}}</dd></div>
+    <div><dt>Revision</dt><dd>{{revision_text}}</dd></div>
+    <div><dt>Exhibits</dt><dd>{{exhibit_range}}</dd></div>
+    <div><dt>Prepared</dt><dd>{{prepared}}</dd></div>
+  </dl>
+</header>
+
+<section class="provenance">
+  <h2>How this record was produced</h2>
+  <dl>
+    <dt>Source device</dt><dd>{{device_line}}</dd>
+    <dt>Coverage</dt><dd>{{coverage_line}}</dd>
+    <dt>Blind spots</dt><dd>{{blind_spots}}</dd>
+    <dt>Event source</dt><dd>{{event_source}}</dd>
+    <dt>Clock</dt><dd>{{clock_line}}</dd>
+    <dt>Carrier side</dt><dd>{{carrier_source}}</dd>
+    <dt>Software prose</dt><dd>{{prose_line}}</dd>
+    <dt>Produced by</dt><dd>{{produced_by}}</dd>
+    <dt>Checking this</dt><dd>{{checking_line}}</dd>
+  </dl>
+</section>
+
+<h2 class="section">Findings</h2>
+{{findings_html}}
+
+<h2 class="section">Camera event log, earliest first</h2>
+{{event_log_html}}
+
+<h2 class="section">Camera coverage of this window</h2>
+{{coverage_html}}
+
+{{corrections_html}}
+
+<section class="statement">
+  <h2>Statement by the account holder</h2>
+  <p>The tracking details in this record are what the carrier's own page showed me. The
+    camera events are what my own device recorded. I have not altered either.</p>
+  <p>I understand that this record states what was and was not recorded at one door, and
+    that it does not establish what any person did or failed to do.</p>
+  <p class="sig">Signature ________________________
+    Name ________________________
+    Date ____________</p>
+</section>
+
+<div class="sheet-break"></div>
+
+<h2 class="section">Exhibit list and integrity manifest</h2>
+<p>{{manifest_scope}}</p>
+{{manifest_html}}
+
+<section class="verify">
+  <h2>How to check these files</h2>
+  <p>Don't take my word for any of this. Everything you need to check it yourself is
+    in the pack, alongside the file <code>manifest.sha256</code>. Put them in one
+    folder and run:</p>
+  <pre>sha256sum -c manifest.sha256</pre>
+  <p>That single command is the same integrity check most carriers' own claims tools
+    already run. <code>OK</code> against a file means it still matches what my device
+    recorded when this pack was built; anything else means don't trust that one file
+    without asking me about it first. <code>manifest.sha256</code> holds one line per
+    file — a 64 character digest, two spaces, the file name — which is the exact
+    layout <code>sha256sum</code> requires, nothing specific to this claim.</p>
+  <p>These digests were computed by Doorstep Receipt over files Doorstep Receipt also
+    wrote. They show whether a file has changed since {{prepared}}. They do not establish
+    who assembled this pack and they do not establish that what it says is accurate.</p>
+</section>
+
+</body>
+</html>

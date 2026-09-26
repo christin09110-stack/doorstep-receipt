@@ -1,0 +1,28 @@
+{
+  "payload": {
+    "meta": {
+      "version": "1.0",
+      "time": "2026-09-20T14:13:40Z",
+      "request_id": "req-fixture-002"
+    },
+    "data": {
+      "id": "evt-fixture-002",
+      "type": "motion",
+      "attributes": {
+        "source": "front-door",
+        "source_type": "camera",
+        "sub_type": "human",
+        "timestamp": "2026-09-20T14:13:40Z",
+        "confidence": 0.94
+      },
+      "relationships": {
+        "devices": {
+          "data": {
+            "id": "ava1.ring.device.FRONTDOOR"
+          }
+        }
+      }
+    }
+  },
+  "signature": "43590adb24afd5d1762c7975ec93900e4f36fcbf24b078a7c8435980e1ae8307"
+}

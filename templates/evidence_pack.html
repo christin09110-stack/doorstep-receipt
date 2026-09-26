@@ -1,0 +1,57 @@
+  <div class="stamp {{verdict_code}}">{{stamp_label}}</div>
+
+  <dl class="meta-grid">
+    <dt>Claim reference</dt><dd>{{claim_id}}</dd>
+    <dt>Revision</dt><dd>{{revision_text}}</dd>
+    <dt>Tracking number<span class="basis">REPORTED</span></dt><dd>{{tracking_number}}</dd>
+    <dt>Carrier<span class="basis">REPORTED</span></dt><dd>{{carrier_name}}</dd>
+    <dt>Carrier claim<span class="basis">REPORTED</span></dt><dd>{{status_label}} at {{claimed_at}}</dd>
+    {{status_line_html}}
+    {{printed_when_html}}
+    {{location_note_html}}
+    <dt>Check window<span class="basis">INFERRED</span></dt><dd>{{window_text}}{{window_adjusted_html}}</dd>
+    <dt>Window width</dt><dd>{{window_reason}}</dd>
+    <dt>Device<span class="basis">RECORDED</span></dt><dd>{{device_name}}</dd>
+    <dt>Times shown in</dt><dd>{{timezone_note}}</dd>
+  </dl>
+
+  <p class="basis-key">
+    Every line above and every row below carries one of three words, the way a witness
+    statement filed under Practice Direction 32 has had to since 1999.
+    <strong>RECORDED</strong> came from the device. <strong>REPORTED</strong> is what a
+    third party asserted, named beside it. <strong>INFERRED</strong> is what this app
+    computed, from a rule it states. The word is printed, never a colour, because this
+    page will be photocopied.
+  </p>
+
+  <h2>How the carrier's side was read</h2>
+  {{provenance_html}}
+
+  <h2>Camera event log in window</h2>
+  {{event_table_html}}
+
+  <h2>Camera coverage of this window</h2>
+  {{coverage_html}}
+
+  <h2>Claim-form sentence</h2>
+  <div class="note">{{summary_sentence}}</div>
+
+  {{corrections_html}}
+
+  <h2>Attachments</h2>
+  <ul class="attachments">
+    {{attachment_items_html}}
+  </ul>
+
+  <p class="footer-note">
+    This page states what the Ring event history recorded in the stated window. It does
+    not identify or accuse any person; Ring's own classifier has been documented
+    mislabeling non-package objects as packages, so anything it classified is marked here
+    as the device's assertion rather than as a finding. Every sentence on this page,
+    including anything written by a model, passed the language check in
+    <code>guard.py</code> before it was rendered. The version of this document that gets
+    attached to a claim form is the <a href="/claims/{{claim_id}}/record">filed record</a>,
+    which is set for print rather than for a screen. Generated {{generated_at}}.
+  </p>
+
+  {{controls_html}}

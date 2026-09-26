@@ -1,0 +1,17 @@
+  <div class="stamp {{stamp_class}}">{{stamp_label}}</div>
+
+  <p class="note">{{message}}</p>
+
+  <dl class="meta-grid">
+    <dt>Claim reference</dt><dd>{{claim_id}}</dd>
+    <dt>Files checked</dt><dd>{{checked}}</dd>
+    <dt>Changed since built</dt><dd>{{mismatched}}</dd>
+    <dt>Listed but absent</dt><dd>{{missing}}</dd>
+    <dt>Present but unlisted</dt><dd>{{unlisted}}</dd>
+    <dt>Manifest digest</dt><dd>{{digest_state}}</dd>
+  </dl>
+
+  <p class="footer-note">
+    This check says whether the files in the archive are the files its own
+    manifest describes. It says nothing about who built the archive.
+  </p>

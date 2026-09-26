@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<style>
+  /* Doorstep Receipt's screen shell, following Callsheet's design language.
+     This is the SCREEN stylesheet only. templates/record.css, the printed record handed
+     to a carrier, is a deliberately different document -- pure black on white,
+     because it is meant for paper -- and is untouched by this pass.
+
+     Montserrat for every heading, label and line of prose; IBM Plex Mono for
+     anything that is a machine record rather than something a person wrote --
+     a timestamp, an event ID, a digest, a tracking number. That split by
+     kind-of-content survives from the app's previous design; only the two
+     faces either side of it changed, because Callsheet has no serif register
+     and the brief is to reproduce its type system, not keep a third one
+     alongside it. Vendored files, licences in ATTRIBUTION.md. */
+  @font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/static/fonts/Montserrat-400.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url(/static/fonts/Montserrat-600.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/static/fonts/Montserrat-700.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(/static/fonts/IBMPlexMono-400.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+  @font-face {
+    font-family: 'IBM Plex Mono';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url(/static/fonts/IBMPlexMono-700.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  /* Callsheet's own palette, values unchanged. Verdict semantics map onto its
+     three status colours: a claim consistent with the camera is --clear
+     (green), one that is not is --breach (red), and one this app cannot
+     conclude on is --offsheet (amber) -- "on the record, not conclusive"
+     reads the same as Callsheet's "somebody not on this document." */
+  :root {
+    --indigo:      #2b1a63;
+    --indigo-2:    #3a2580;
+    --gold:        #a8842c;
+    --gold-soft:   #f5edd8;
+    --gold-line:   #ddc98d;
+    --gold-bar:    #c3a45f;
+    --cyan:        #5fd7e8;
+    --cyan-deep:   #0d6d7c;
+    --cyan-soft:   #e2f8fb;
+
+    --breach:      #cf1f1f;
+    --breach-soft: #fdeeee;
+    --offsheet:    #d98008;
+    --offsheet-soft:#fdf3e3;
+    --clear:       #17823a;
+    --clear-soft:  #e9f7ed;
+    --note:        #1f5fd0;
+
+    --page:   #f2f2f5;
+    --card:   #ffffff;
+    --line:   #e0e0e6;
+    --line-2: #c9c9d2;
+    --ink:    #1c1c22;
+    --ink-2:  #55555f;
+    --ink-3:  #8b8b95;
+
+    --sans: "Montserrat", -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    --r: 4px;
+    --shadow: 0 1px 3px rgba(28,28,34,.10);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--page);
+    background-image: repeating-linear-gradient(45deg,
+      rgba(0,0,0,.011) 0 2px, transparent 2px 4px);
+    color: var(--ink);
+    font: 400 14px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 46px;
+  }
+  button { font: inherit; cursor: pointer; }
+  table { border-collapse: collapse; }
+  .hash, code.hash { font-family: var(--mono); font-variant-numeric: slashed-zero tabular-nums; }
+
+  /* ---------------------------------------------------------------- masthead */
+  .masthead {
+    background: var(--indigo);
+    border-bottom: 3px solid var(--gold-bar);
+    color: #fff; min-height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; padding: 10px 20px;
+  }
+  .crest {
+    display: flex; align-items: center; gap: 10px;
+    font: 700 19px/1 var(--sans); letter-spacing: .06em;
+  }
+  .crest .slate {
+    width: 26px; height: 22px; border-radius: 2px; background: var(--gold-bar);
+    position: relative; overflow: hidden; flex: none;
+  }
+  /* A claims stamp, drawn: three diagonal stripes under a hinged bar -- the
+     same abstract device Callsheet's clapperboard uses, recoloured. */
+  .crest .slate::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 7px;
+    background: repeating-linear-gradient(115deg,
+      var(--indigo) 0 5px, #fff 5px 10px);
+  }
+
+  /* ------------------------------------------------------------- strapband */
+  .strapband {
+    background: var(--gold-soft); border-bottom: 1px solid var(--gold-line);
+  }
+  .strap {
+    margin: 0 auto; padding: 12px 22px; text-align: center; max-width: 96ch;
+    color: #5c4711; font: 400 13.5px/1.55 var(--sans);
+  }
+  .strap b { font-weight: 700; color: #4a3a0d }
+  @media (max-width: 720px) { .strap { font-size: 12.5px; padding: 10px 14px } }
+
+  /* --------------------------------------------------------------- iconnav
+     views.nav() renders <nav class="tabs"><a href aria-current="page">...</a></nav>;
+     this is that primary navigation, styled to Callsheet's .iconnav. */
+  nav.tabs {
+    background: #fff; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 4px; padding: 0 20px; height: 46px;
+    overflow-x: auto;
+    position: sticky; top: 0; z-index: 20;
+  }
+  nav.tabs a {
+    border: 0; background: transparent; color: var(--ink-2); text-decoration: none;
+    font: 600 13.5px/1 var(--sans); white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 15px; border-bottom: 3px solid transparent;
+  }
+  nav.tabs a:hover { color: var(--indigo); }
+  nav.tabs a[aria-current="page"] { color: var(--indigo); border-bottom-color: var(--gold-bar); font-weight: 700; }
+
+  /* ------------------------------------------------------------------ shell */
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 20px 20px 46px; }
+  .split { display: grid; grid-template-columns: 306px 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 760px) {
+    .wrap { padding: 14px 14px 40px; }
+    .split { grid-template-columns: 1fr; }
+  }
+
+  /* --------------------------------------------------------- identity panel */
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+    box-shadow: var(--shadow); margin-bottom: 18px; }
+  .panel > h2 {
+    display: block; margin: 0; padding: 13px 16px; border-bottom: 1px solid var(--line);
+    background: #fafafb; font: 600 13px/1 var(--sans);
+    letter-spacing: .09em; text-transform: uppercase; color: var(--ink-2);
+  }
+  .panel .body { padding: 16px; }
+
+  .slate-card { border: 1px solid var(--line-2); border-radius: 2px; overflow: hidden;
+    isolation: isolate; }
+  .slate-card .top {
+    height: 22px; background: repeating-linear-gradient(115deg,
+      var(--indigo) 0 9px, #f4f4f6 9px 18px);
+  }
+  .slate-card .face { padding: 14px 15px; background: #fff; }
+  .slate-card .face .ttl { font: 700 17px/1.15 var(--sans); letter-spacing: .02em; }
+  .slate-card .face .sub { margin-top: 4px; font-size: 12.5px; color: var(--ink-3); }
+
+  .facts { margin: 15px 0 0; padding: 0; }
+  .facts div { display: flex; justify-content: space-between; align-items: baseline;
+    gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f3; }
+  .facts div:last-child { border-bottom: 0; }
+  .facts dt { font-size: 12px; color: var(--ink-3); }
+  .facts dd { margin: 0; font: 700 13px/1.3 var(--sans); text-align: right; }
+  .facts dd.hot { color: var(--breach); }
+
+  /* ------------------------------------------------------------- the sheet */
+  main .sheet {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+    box-shadow: var(--shadow); padding: 26px 28px 32px; overflow-wrap: anywhere;
+  }
+  .head { margin: 0 0 20px; padding-bottom: 16px; border-bottom: 1px solid var(--gold-line); }
+  .head .eyebrow { margin: 0 0 6px; font: 700 12.5px/1 var(--sans); letter-spacing: .12em;
+    text-transform: uppercase; color: var(--gold); }
+  .head h1 { margin: 0; font: 700 23px/1.25 var(--sans); letter-spacing: -.01em; color: var(--ink); }
+
+  h2 {
+    display: flex; align-items: center; gap: 12px; margin: 28px 0 14px;
+    font: 700 12.5px/1 var(--sans); letter-spacing: .12em;
+    text-transform: uppercase; color: var(--gold); white-space: nowrap;
+  }
+  h2::after { content: ""; flex: 1; height: 1px; background: var(--gold-line); }
+  .sheet > h2:first-of-type, .head + h2 { margin-top: 0; }
+
+  p { margin: 0 0 14px; font-size: 14px; line-height: 1.65; color: var(--ink-2); }
+  p:last-child { margin-bottom: 0; }
+  a { color: var(--note); }
+  strong { color: var(--ink); }
+  p code, li code, dd code { font-family: var(--mono); font-size: 12.5px; background: #fafafb;
+    border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; color: var(--ink); }
+
+  /* -------------------------------------------------------------- notices
+     .note is Callsheet's cyan .notice band, for information (the source of a
+     reading, the carrier-claim sentence). .note.refused is the red variant,
+     for a language-check refusal or something that needs chasing -- a rule
+     enforced, in Callsheet's terms. */
+  .note {
+    background: var(--cyan-soft); border: 1px solid #9fe6f1;
+    border-left: 5px solid var(--cyan); border-radius: var(--r);
+    padding: 15px 18px; margin: 0 0 18px; font-size: 14px; color: #17414a;
+  }
+  .note strong { display: block; margin: 0 0 7px; font: 700 13px/1.2 var(--sans);
+    letter-spacing: .04em; text-transform: uppercase; color: var(--cyan-deep); }
+  .note p { color: #17414a; }
+  .note ul { margin: 0; padding-left: 20px; }
+  .note.refused {
+    background: var(--breach-soft); border-color: #f2b6b6; border-left-color: var(--breach); color: #5c1414;
+  }
+  .note.refused strong { color: var(--breach); }
+  .note.refused p { color: #5c1414; }
+
+  /* A titled callout in Callsheet's colour-outlined .entry language, for
+     content this app has and Callsheet has no screen for -- "what this app
+     will not write" is a boundary statement, not a live status, so it gets
+     the neutral --note blue rather than the notice cyan or an alarm red. */
+  .entry {
+    background: #fff; border: 2px solid var(--line-2); border-radius: var(--r);
+    padding: 16px 18px; margin: 0 0 18px;
+  }
+  .entry h3 { margin: 0 0 6px; font: 700 14px/1.3 var(--sans); letter-spacing: .02em;
+    text-transform: uppercase; color: var(--note); }
+  .entry p { margin: 0; }
+  .entry.note { border-color: var(--note); }
+
+  /* ------------------------------------------------------------------ stamp
+     The verdict, at the size an evidence document's central finding earns. */
+  .stamp {
+    display: inline-block; border: 2px solid currentColor; border-radius: var(--r);
+    padding: 10px 20px; font: 700 15px/1.2 var(--sans); letter-spacing: .03em;
+    text-transform: uppercase; margin: 0 0 20px;
+  }
+  /* The verdict stamp keeps its own pre-existing forest-green / seal-red pair
+     (#2f4a34 / #7a2323) rather than switching to Callsheet's --clear/--breach:
+     this is the one colour identity in the product that predates this redesign
+     and that test_evidence.py locks to those two exact hex values. Everything
+     else about the stamp -- the chip shape, the uppercase weight, the tinted
+     background -- is Callsheet's language; only these two specific hexes are
+     held over. --offsheet is unconstrained and used as-is for "indeterminate". */
+  .stamp.consistent_with_camera     { color: #2f4a34; background: var(--clear-soft); }
+  .stamp.not_consistent_with_camera { color: #7a2323; background: var(--breach-soft); }
+  .stamp.indeterminate              { color: var(--offsheet); background: var(--offsheet-soft); }
+
+  .stamp-chip { display: inline-block; border-radius: 10px; padding: 2px 9px;
+    font: 700 11px/17px var(--sans); letter-spacing: .03em; vertical-align: 2px;
+    border: 1px solid transparent; white-space: nowrap; }
+  .stamp-chip.consistent_with_camera     { background: var(--clear-soft);    color: var(--clear);    border-color: #a9dcb8; }
+  .stamp-chip.not_consistent_with_camera { background: var(--breach-soft);   color: var(--breach);   border-color: #f2b6b6; }
+  .stamp-chip.indeterminate              { background: var(--offsheet-soft); color: var(--offsheet); border-color: #f0cd93; }
+
+  /* -------------------------------------------------------------- controls */
+  label { display: block; font: 600 11.5px/1.6 var(--sans); letter-spacing: .07em;
+    text-transform: uppercase; color: var(--ink-3); margin: 0 0 6px; }
+  input[type=text], input[type=datetime-local], input[type=file], select, textarea {
+    width: 100%; font: inherit; font-size: 14px; padding: 11px 13px;
+    border: 1px solid var(--line-2); border-radius: var(--r);
+    background: #fff; color: var(--ink);
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-soft);
+  }
+  textarea { font-family: var(--sans); font-size: 14.5px; line-height: 1.6; min-height: 260px; resize: vertical; }
+  .field { margin-bottom: 18px; }
+  .row { display: flex; flex-wrap: wrap; gap: 16px; }
+  .row > .field { flex: 1 1 200px; }
+  .search { margin-bottom: 4px; }
+
+  button, .button {
+    display: inline-block; background: var(--gold); color: #fff; border: 0;
+    border-radius: var(--r); padding: 11px 20px; font: 700 13px/1 var(--sans);
+    letter-spacing: .03em; text-decoration: none; cursor: pointer;
+  }
+  button:hover, .button:hover { background: #8f701f; }
+  button.secondary, .button.secondary { background: #fff; color: var(--ink-2); border: 1px solid var(--line-2); }
+  button.secondary:hover, .button.secondary:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-soft); }
+
+  /* ------------------------------------------------------------------ tables
+     Callsheet's table.grid look (uppercase gold-lined header, tabular
+     monospace figures), attached to the selectors this app's own HTML
+     already uses (`table`, `table.log`) rather than a new `.grid` class --
+     views.py and evidence.py build these tables and are not part of this
+     redesign. The layout fixes below (`nowrap`/`break-anywhere`/floors) are
+     unchanged from the previous stylesheet; only colour and type changed. */
+  table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 13px; }
+  table th, table td { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table th { color: var(--ink-3); font: 600 11px/1 var(--sans); text-transform: uppercase;
+             letter-spacing: .07em; border-bottom: 2px solid var(--gold-line); overflow-wrap: normal; white-space: nowrap; }
+  table td.nowrap { white-space: nowrap; overflow-wrap: normal; }
+  table td { overflow-wrap: break-word; word-break: normal; hyphens: none; }
+  table td code, table td.break-anywhere { overflow-wrap: anywhere; }
+  table.log { max-width: 100%; font-size: 12px; }
+  table.log th, table.log td { padding: 8px 6px; }
+  table.log td.break-anywhere { min-width: 15ch; }
+  table.log td[data-label="Carrier"] { min-width: 11ch; }
+  table td[data-label="Reason"] { min-width: 22ch; }
+  table td[data-label="Basis"] { min-width: 15ch; }
+  table td .basis {
+    margin-left: 0;
+    overflow-wrap: normal;
+    word-break: keep-all;
+  }
+  table td .stamp-chip { display: inline-block; white-space: normal; }
+  table tr:hover td { background: #fafafb; }
+
+  /* --------------------------------------------------------------- basis
+     The three-word provenance vocabulary, printed rather than coloured, so
+     it survives being read out loud and photocopied in greyscale where it
+     is quoted on the printed record. */
+  .basis {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ink-3); display: inline-block; margin-left: 7px;
+  }
+  .meta-grid dt .basis, dl.meta-grid dt .basis { margin-left: 5px; }
+  .basis-key {
+    font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    padding: 12px 0; margin: 0 0 10px;
+  }
+  .basis-key strong { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--ink); text-transform: none; }
+  .device-note { font-size: 13px; color: var(--ink-3); margin: 8px 0 0; }
+  .event-code { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .chase { font-family: var(--mono); font-size: 11px; color: var(--breach); }
+
+  /* ----------------------------------------------------------------- misc */
+  dl.meta-grid, .meta-grid {
+    display: grid; grid-template-columns: 190px 1fr; row-gap: 9px; column-gap: 14px;
+    font-size: 14px; margin: 0 0 22px;
+  }
+  .meta-grid dt { color: var(--ink-3); font-family: var(--mono); font-size: 11.5px;
+    text-transform: uppercase; letter-spacing: .05em; padding-top: 3px; }
+  .meta-grid dd { margin: 0; font-weight: 700; }
+
+  .status-line { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin: 0 0 18px; }
+  .status-line .dot { font-size: 15px; line-height: 1; }
+  .status-line .up { color: var(--clear); }
+  .status-line .down { color: var(--breach); }
+
+  .attachments { list-style: none; margin: 0 0 20px; padding: 0; display: grid; gap: 8px; font-size: 13.5px; }
+  .attachments li { padding: 10px 12px; background: #fafafb; border: 1px solid var(--line); border-radius: var(--r); }
+
+  .empty-set { color: var(--ink-3); font-size: 13.5px; padding: 20px 0; font-style: italic; }
+
+  .footer-note {
+    margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--line);
+    font-size: 12.5px; color: var(--ink-3); line-height: 1.6;
+  }
+
+  .lede { font-size: 16px; color: var(--ink-2); margin: 0 0 16px; }
+
+  /* ---------------------------------------------------------------- footer */
+  .footbar {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 34px;
+    background: var(--gold-bar); color: #43370f;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 600 12px/1 var(--sans); z-index: 25; text-align: center; padding: 0 12px;
+  }
+
+  @media (max-width: 560px) {
+    main .sheet { padding: 18px 16px 26px; }
+    .meta-grid, dl.meta-grid { grid-template-columns: 1fr; row-gap: 3px; }
+    .meta-grid dd, dl.meta-grid dd { margin-bottom: 10px; }
+    .facts div { flex-direction: column; align-items: flex-start; gap: 2px; }
+    .facts dd { text-align: left; }
+    table, table tbody, table tr, table td { display: block; width: 100%; }
+    table thead { display: none; }
+    table tr { border-bottom: 1px solid var(--line-2); padding: 6px 0; }
+    table td { border: none; padding: 3px 0; }
+    table td::before { content: attr(data-label) ": "; color: var(--ink-3); }
+    table td.nowrap { white-space: normal; }
+    .footbar { font-size: 10.5px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <span class="crest"><span class="slate"></span>DOORSTEP RECEIPT</span>
+</header>
+
+<div class="strapband"><p class="strap">A carrier's tracking API authenticates a shipper
+account, not you, so this app cannot fetch its side on its own. <b>You hand it the
+tracking page; it checks that against what your own doorbell camera actually recorded,
+and produces a claim file that says which basis every line rests on.</b></p></div>
+
+{{nav_html}}
+
+<div class="wrap">
+  <div class="split">
+    <aside>
+      <section class="panel">
+        <h2>This app</h2>
+        <div class="body">
+          <div class="slate-card">
+            <div class="top"></div>
+            <div class="face">
+              <div class="ttl">Doorstep Receipt</div>
+              <div class="sub">Camera vs. carrier, reconciled</div>
+            </div>
+          </div>
+          <dl class="facts">
+            <div><dt>Carrier side</dt><dd>You hand over the page</dd></div>
+            <div><dt>Ring backfill</dt><dd class="hot">Today onward only</dd></div>
+            <div><dt>Language check</dt><dd>Every sentence, guard.py</dd></div>
+            <div><dt>This app will not write</dt><dd>What a person did</dd></div>
+          </dl>
+        </div>
+      </section>
+    </aside>
+    <main>
+      <div class="sheet">
+        <div class="head">
+          <p class="eyebrow">{{subtitle}}</p>
+          <h1>{{title}}</h1>
+        </div>
+        {{body_html}}
+      </div>
+    </main>
+  </div>
+</div>
+
+<footer class="footbar">Reconciled in code &middot; every line states its basis</footer>
+</body>
+</html>

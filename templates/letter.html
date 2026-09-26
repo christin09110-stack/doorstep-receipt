@@ -1,0 +1,25 @@
+  {{notice_html}}
+
+  <form method="post" action="/claims/{{claim_id}}/letter">
+    <div class="field">
+      <label for="subject">Subject</label>
+      <input type="text" id="subject" name="subject" value="{{subject}}">
+    </div>
+    <div class="field">
+      <label for="body">Letter (revision {{revision}}, {{source_label}})</label>
+      <textarea id="body" name="body">{{body}}</textarea>
+    </div>
+    <button type="submit">Save this wording</button>
+    <a class="button secondary" href="/claims/{{claim_id}}/letter/redraft">Draft it again</a>
+    <a class="button secondary" href="/claims/{{claim_id}}/evidence">Back to the pack</a>
+  </form>
+
+  <h2>Revisions</h2>
+  {{revisions_html}}
+
+  <p class="footer-note">
+    Your edit goes through the same language check the model's draft does. A
+    letter with this app's evidence pack attached is a letter with this app's
+    name on it, so it refuses an accusation from you for the same reason it
+    refuses one from the model: a camera records a door, not a person's conduct.
+  </p>

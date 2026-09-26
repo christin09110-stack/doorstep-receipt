@@ -1,0 +1,78 @@
+  <p class="status-line">
+    <span class="dot {{reader_state}}">&#9679;</span> Tracking page reader: {{reader_status}}
+  </p>
+
+  <div class="note">
+    <strong>The half this app cannot fetch</strong>
+    <p>
+      The camera side of this claim is already here. Doorstep Receipt has been
+      watching the door since you connected it. The carrier's side is the half no
+      consumer app can fetch: carrier tracking APIs authenticate a shipper account,
+      not a recipient, so the only way this app can see what the carrier claimed is
+      for you to hand over the page you are already looking at.
+    </p>
+  </div>
+
+  <form method="post" action="/read" enctype="multipart/form-data">
+    <h2>Photograph or paste the tracking page</h2>
+    <div class="field">
+      <label for="screenshot">A screenshot or photo of the tracking page</label>
+      <input type="file" id="screenshot" name="screenshot" accept="image/png,image/jpeg,image/gif,image/webp">
+    </div>
+    <div class="field">
+      <label for="page_text">Or paste the text of it</label>
+      <textarea id="page_text" name="page_text" style="min-height:150px"
+        placeholder="Paste everything. The reader picks out the carrier, the tracking number, the status line and the time."></textarea>
+    </div>
+    <input type="hidden" name="tz_offset" id="tz_offset" value="0">
+    <input type="hidden" name="tz_label" id="tz_label" value="UTC">
+    <button type="submit">Read the page</button>
+    <a class="button secondary" href="/claims/new">Type it in instead</a>
+  </form>
+
+  <h2>What happens to it</h2>
+  <p>
+    The image or the text goes to a multimodal model on Amazon Bedrock, which
+    transcribes the four fields this app needs and nothing else. You get a
+    screen showing what it read before any claim is created, and you can change
+    every field on it. Nothing is stored until you accept the reading.
+  </p>
+  <p>
+    If Bedrock is unreachable, pasted text is read instead by this app's own
+    pattern rules, which cover six carrier formats and say so when they cannot
+    manage. A screenshot cannot be read without the model, and the app will tell
+    you that rather than guessing.
+  </p>
+
+  <div class="entry note">
+    <h3>What this app will not write</h3>
+    <p>
+      A doorbell camera can show that nothing was recorded at your door during a
+      window of time. It cannot show that a carrier was dishonest. Every sentence
+      this app produces, including the ones a model writes, is checked against
+      <code>guard.py</code> before you see it, and a sentence that states what a
+      person did is refused and replaced in front of you rather than quietly
+      softened.
+    </p>
+  </div>
+
+  {{demo_html}}
+
+  <p class="footer-note">
+    Camera events on record: {{event_count}}. Camera status samples: {{sample_count}}.
+    Claims on file: {{claim_count}}.
+  </p>
+<script>
+  // The tracking page prints a wall clock with no offset. The browser knows the
+  // offset the reader's own machine is in, which is the best available guess at
+  // the delivery address's. The evidence pack states that it was supplied here
+  // rather than read off the carrier's page.
+  (function () {
+    var offset = -new Date().getTimezoneOffset();
+    document.getElementById('tz_offset').value = offset;
+    try {
+      document.getElementById('tz_label').value =
+        Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+    } catch (e) { /* older browsers keep UTC */ }
+  })();
+</script>

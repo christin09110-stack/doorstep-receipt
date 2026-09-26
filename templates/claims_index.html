@@ -1,0 +1,36 @@
+  {{chase_html}}
+
+  <form method="get" action="/claims" class="search">
+    <div class="row">
+      <div class="field" style="flex: 2 1 260px">
+        <label for="q">Search everything on a claim</label>
+        <input type="text" id="q" name="q" value="{{query}}"
+          placeholder="tracking number, carrier, a word from your note, a word from the letter">
+      </div>
+      <div class="field">
+        <label for="verdict">Verdict</label>
+        <select id="verdict" name="verdict">{{verdict_options_html}}</select>
+      </div>
+      <div class="field">
+        <label for="carrier">Carrier</label>
+        <select id="carrier" name="carrier">{{carrier_options_html}}</select>
+      </div>
+      <div class="field">
+        <label for="outcome">Outcome</label>
+        <select id="outcome" name="outcome">{{outcome_options_html}}</select>
+      </div>
+    </div>
+    <button type="submit">Search</button>
+    <a class="button secondary" href="/claims">Clear</a>
+  </form>
+
+  <h2>{{result_heading}}</h2>
+  {{results_html}}
+
+  <p class="footer-note">
+    {{tally}} Claims are kept in a local SQLite file, because a delivery dispute
+    runs for weeks and a claim you cannot find next Tuesday is a claim you will
+    not pursue. A claim's verdict and sentence are stored exactly as they were
+    reached and are never recomputed on read: a document somebody has already
+    sent to a retailer must not quietly change its mind.
+  </p>

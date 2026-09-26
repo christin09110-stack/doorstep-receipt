@@ -1,0 +1,40 @@
+  <p>
+    A claims desk does not read a web page. It receives an attachment, forwards
+    it, and somebody three steps away opens it. This is that attachment.
+  </p>
+
+  <p>
+    <a class="button" href="/claims/{{claim_id}}/pack.zip">Download the dispute pack</a>
+  </p>
+
+  <h2>Files in the pack</h2>
+  {{files_html}}
+
+  <dl class="meta-grid">
+    <dt>Pack digest</dt><dd><code>{{pack_digest}}</code></dd>
+    <dt>Algorithm</dt><dd>SHA-256 over each file, then over the file list in the order shown</dd>
+    <dt>Built</dt><dd>{{built_at}}</dd>
+  </dl>
+
+  <h2>What the checksums are for, and what they are not for</h2>
+  <p>
+    Recompute a digest and compare it with its line. If they differ, that file
+    has changed since the pack was built. The pack digest covers the list
+    itself, so a line cannot be edited without changing it too.
+  </p>
+  <p>
+    They do not establish who assembled the pack, and they do not establish that
+    what it says is accurate. This app built it and this app wrote the digests.
+    Treat them as a seal on an envelope, not as a notary's stamp. Any manifest
+    that implies more than that is doing the thing this product refuses to do
+    everywhere else.
+  </p>
+
+  <h2>Check a pack you were sent</h2>
+  <form method="post" action="/packs/verify" enctype="multipart/form-data">
+    <div class="field">
+      <label for="pack">A Doorstep Receipt pack (.zip)</label>
+      <input type="file" id="pack" name="pack" accept=".zip,application/zip" required>
+    </div>
+    <button type="submit">Re-run every digest</button>
+  </form>

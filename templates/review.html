@@ -1,0 +1,56 @@
+  <p class="note">
+    <strong>Check this before it becomes a claim</strong><br>
+    {{source_sentence}} Nothing has been stored yet. Change anything that is wrong.
+  </p>
+
+  {{warnings_html}}
+
+  <form method="post" action="/claims/form">
+    <div class="row">
+      <div class="field">
+        <label for="tracking_number">Tracking number</label>
+        <input type="text" id="tracking_number" name="tracking_number" value="{{tracking_number}}" required>
+      </div>
+      <div class="field">
+        <label for="carrier_code">Carrier</label>
+        <select id="carrier_code" name="carrier_code">{{carrier_options_html}}</select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="status">Status on the tracking page</label>
+        <select id="status" name="status">{{status_options_html}}</select>
+      </div>
+      <div class="field">
+        <label for="claimed_at">Time the tracking page gives</label>
+        <input type="datetime-local" id="claimed_at" name="claimed_at" value="{{claimed_at_local}}" required>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="status_text">Status line as printed</label>
+        <input type="text" id="status_text" name="status_text" value="{{status_text}}">
+      </div>
+      <div class="field">
+        <label for="device_name">Camera</label>
+        <input type="text" id="device_name" name="device_name" value="{{device_name}}">
+      </div>
+    </div>
+    <div class="field">
+      <label for="notes">Your own note on this claim (optional, searchable)</label>
+      <input type="text" id="notes" name="notes" value="{{notes}}" placeholder="e.g. birthday present, ordered from Hartley's">
+    </div>
+    <input type="hidden" name="tz_offset" value="{{tz_offset}}">
+    <input type="hidden" name="tz_label" value="{{tz_label}}">
+    <input type="hidden" name="reading_source" value="{{reading_source}}">
+    <input type="hidden" name="reading_model" value="{{reading_model}}">
+    <input type="hidden" name="reading_warnings" value="{{reading_warnings}}">
+    <button type="submit">Reconcile against the camera</button>
+    <a class="button secondary" href="/">Start again</a>
+  </form>
+
+  <p class="footer-note">
+    The checking window is set from the carrier, not from a fixed number: a
+    postie who scans on the doorstep and a ground carrier who scans at the
+    vehicle need different amounts of slack. {{window_note}}
+  </p>
